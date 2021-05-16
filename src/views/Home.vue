@@ -3,19 +3,20 @@
     <h1>Welcome to Loan Decision Engine</h1>
     <br/>
     <h3>Request for loan </h3>
+    <br/>
 
-    <table style="width:100%" align="right">
+    <table style="width:100%" align="center">
       <tr>
         <th>Amount from 2000 EUR to 10000 EUR:</th>
       </tr>
       <tr>
-        <td><input v-model="requestedAmount" placeholder="Enter loan amount"></td>
+        <td><input v-model="requestedAmount" type="number" min="0" step="100" placeholder="Enter loan amount "></td>
       </tr>
       <tr>
         <th>Loan period can be from 12 to 60 months</th>
       </tr>
       <tr>
-        <td><input v-model="requestedPeriod" placeholder="Enter period in months"></td>
+        <td><input v-model="requestedPeriod" type="number" min="0" step="1" placeholder="Enter period in months "></td>
       </tr>
       <tr>
         <th>Choose customer code:</th>
@@ -32,14 +33,22 @@
       <b-button variant="success" v-on:click="requestLoan()">Send request</b-button>
     </div>
     <br/>
-    <p v-if="errorMessage" class="regular-text">{{ errorMessage }}</p>
+    <div id="error">
+      <p v-if="errorMessage" class="regular-text" >{{ errorMessage }}</p>
+    </div>
+
     <p v-if="loanResponse" class="regular-text" >
-      Your requested loan is {{ loanResponse.enteredAmount }} EUR for {{ loanResponse.enteredPeriod }}
+      Requested loan is {{ loanResponse.enteredAmount }} EUR for {{ loanResponse.enteredPeriod }}
       month period. <br/>
+    <p v-if="loanResponse && loanResponse.proposedAmount==0"> The maximum possible loan for the entered
+    period is below minimum (2000EUR). </p>
     <p v-if="loanResponse && loanResponse.proposedAmount!=0"> The maximum amount for requested period
-      is {{ loanResponse.proposedAmount }} EUR </p>
+      is {{ loanResponse.proposedAmount }} EUR. </p>
+    <p v-if="loanResponse && loanResponse.proposedPeriod==0"> Calculated loan period for the entered
+      amount exceeds the maximum allowed loan period (60 months). </p>
     <p v-if="loanResponse && loanResponse.proposedPeriod!=0"> We could provide the requested loan for
-      {{ loanResponse.proposedPeriod }} month period </p>
+      {{ loanResponse.proposedPeriod }} month period. </p>
+
 
 
   </div>
@@ -72,6 +81,9 @@ export default {
       } else if (this.requestedAmount < 2000 || this.requestedAmount > 10000) {
         this.errorMessage = 'Loan amount is out of bounds';
         return;
+      } else if(this.selected===null){
+        this.errorMessage = 'Enter customer code';
+        return;
       }
       this.$http.get('api/loanDecision/' + this.requestedAmount
           + '/' + this.requestedPeriod + '/' + this.selected)
@@ -90,10 +102,10 @@ export default {
 
 <style>
 
-#button {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  text-align: center;
-  font-color: #42b983;
+
+#error{
+  font-palette: light;
+  color: crimson;
 }
 
 </style>
