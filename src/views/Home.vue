@@ -2,7 +2,7 @@
   <div class="home">
     <h1>Welcome to Loan Decision Engine</h1>
     <br/>
-    <h3>Request for loan </h3>
+    <h3>Request for Loan </h3>
     <br/>
 
     <table style="width:100%" align="center">
